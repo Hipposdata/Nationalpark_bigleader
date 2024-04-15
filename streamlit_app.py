@@ -128,7 +128,7 @@ def make_pointplot(selected_national_park_accident,selected_npark_boundary):
     # 사고 원인별로 레이어 그룹 생성 및 추가
     accident_types = selected_national_park_accident['유형'].unique()
    # 사고 원인별로 레이어 그룹 생성 및 추가
-    groups = {'사고 원인': []}  # 사고 원인별 그룹을 담을 리스트를 생성합니다.
+    groups = {'사고 유형': []}  # 사고 원인별 그룹을 담을 리스트를 생성합니다.
 
     for i, color in color_dict_hex.items():
         type_accident = selected_national_park_accident[selected_national_park_accident['유형'] == i]
@@ -137,21 +137,19 @@ def make_pointplot(selected_national_park_accident,selected_npark_boundary):
 
         # 사고 위치에 대한 CircleMarker 추가 및 툴팁 정보 설정
         for idx, row in type_accident.iterrows():
-            tooltip_text = f"유형: {row['유형']}<br>사고 일자: {row['연월일']}"  # 툴팁 텍스트 정의
-            popup_text = f"유형: {row['유형']}<br>사고 일자: {row['연월일']}<br>위치: {row['위도_변환']}, {row['경도_변환']}<br>사고장소: {row['위치']}"
-            folium.CircleMarker(
+                tooltip_text = f"유형: {row['유형']}<br>사고 일자: {row['연월일']}<br>위치: {row['위도_변환']}, {row['경도_변환']}<br>사고장소: {row['위치']}<br>고도: {row['고도']}<br>경사도: {float(row['경사도']):.2f}"                
+                folium.CircleMarker(
                 location=(row['위도_변환'], row['경도_변환']),
                 radius=3,
                 color=accident_color,
                 fill=True,
                 fill_color=accident_color,
                 fill_opacity=1.0,  # 내부 채움 불투명도
-                popup=popup_text,
-                tooltip=tooltip_text  # 툴팁 추가
+                tooltip=tooltip_text
             ).add_to(feature_group)
         
         feature_group.add_to(m)  # FeatureGroup을 지도 객체에 추가
-        groups['사고 원인'].append(feature_group)  # 사고 원인별로 그룹에 FeatureGroup을 추가합니다.
+        groups['사고 유형'].append(feature_group)  # 사고 원인별로 그룹에 FeatureGroup을 추가합니다.
 
     # 사고 원인별 그룹을 그룹화된 레이어 컨트롤로 추가
     GroupedLayerControl(groups=groups, collapsed=False, exclusive_groups=False).add_to(m)
@@ -441,7 +439,7 @@ def make_hotspot_safetyplace(selected_national_park_accident,selected_npark_boun
     # 사고 원인별로 레이어 그룹 생성 및 추가
     accident_types = selected_national_park_accident['유형'].unique()
    # 사고 원인별로 레이어 그룹 생성 및 추가
-    groups = {'사고 원인': []}  # 사고 원인별 그룹을 담을 리스트를 생성합니다.
+    groups = {'사고 유형': []}  # 사고 원인별 그룹을 담을 리스트를 생성합니다.
 
     for i, color in color_dict_hex.items():
         type_accident = selected_national_park_accident[selected_national_park_accident['유형'] == i]
@@ -450,21 +448,19 @@ def make_hotspot_safetyplace(selected_national_park_accident,selected_npark_boun
 
         # 사고 위치에 대한 CircleMarker 추가 및 툴팁 정보 설정
         for idx, row in type_accident.iterrows():
-            tooltip_text = f"유형: {row['유형']}<br>사고 일자: {row['연월일']}"  # 툴팁 텍스트 정의
-            popup_text = f"유형: {row['유형']}<br>사고 일자: {row['연월일']}<br>위치: {row['위도_변환']}, {row['경도_변환']}<br>사고장소: {row['위치']}"
-            folium.CircleMarker(
+                tooltip_text = f"유형: {row['유형']}<br>사고 일자: {row['연월일']}<br>위치: {row['위도_변환']}, {row['경도_변환']}<br>사고장소: {row['위치']}<br>고도: {row['고도']}<br>경사도: {float(row['경사도']):.2f}"                    
+                folium.CircleMarker(
                 location=(row['위도_변환'], row['경도_변환']),
                 radius=3,
                 color=accident_color,
                 fill=True,
                 fill_color=accident_color,
                 fill_opacity=1.0,  # 내부 채움 불투명도
-                popup=popup_text,
-                tooltip=tooltip_text  # 툴팁 추가
+                tooltip=tooltip_text
             ).add_to(feature_group)
         
         feature_group.add_to(m)  # FeatureGroup을 지도 객체에 추가
-        groups['사고 원인'].append(feature_group)  # 사고 원인별로 그룹에 FeatureGroup을 추가합니다.
+        groups['사고 유형'].append(feature_group)  # 사고 원인별로 그룹에 FeatureGroup을 추가합니다.
 
     # 사고 원인별 그룹을 그룹화된 레이어 컨트롤로 추가
     GroupedLayerControl(groups=groups, collapsed=False, exclusive_groups=False).add_to(m)
@@ -694,13 +690,15 @@ def make_hotspot_heart(selected_national_park_accident,selected_npark_boundary,d
     # 심장문제 사고지점 추가
     seoul_accident_heart_layer = folium.FeatureGroup(name='심장사고지점')
     for idx, row in selected_national_park_accident.iterrows():
-        folium.CircleMarker(
+            tooltip_text = f"유형: {row['유형']}<br>사고 일자: {row['연월일']}<br>위치: {row['위도_변환']}, {row['경도_변환']}<br>사고장소: {row['위치']}<br>고도: {row['고도']}<br>경사도: {float(row['경사도']):.2f}"                
+            folium.CircleMarker(
             location=(row['위도_변환'], row['경도_변환']),
             radius=3,
             color='red',
             fill=True,
             fill_color='red',
-            fill_opacity=1
+            fill_opacity=1,
+            tooltip=tooltip_text
         ).add_to(seoul_accident_heart_layer)
     seoul_accident_heart_layer.add_to(m)
 
@@ -776,7 +774,7 @@ def make_hotspot_heart(selected_national_park_accident,selected_npark_boundary,d
 #     # 사고 원인별로 레이어 그룹 생성 및 추가
 #     accident_types = selected_national_park_accident['유형'].unique()
 #    # 사고 원인별로 레이어 그룹 생성 및 추가
-#     groups = {'사고 원인': []}  # 사고 원인별 그룹을 담을 리스트를 생성합니다.
+#     groups = {'사고 유형': []}  # 사고 원인별 그룹을 담을 리스트를 생성합니다.
 
 #     for i, color in color_dict_hex.items():
 #         type_accident = selected_national_park_accident[selected_national_park_accident['유형'] == i]
@@ -799,7 +797,7 @@ def make_hotspot_heart(selected_national_park_accident,selected_npark_boundary,d
 #             ).add_to(feature_group)
         
 #         feature_group.add_to(m)  # FeatureGroup을 지도 객체에 추가
-#         groups['사고 원인'].append(feature_group)  # 사고 원인별로 그룹에 FeatureGroup을 추가합니다.
+#         groups['사고 유형'].append(feature_group)  # 사고 원인별로 그룹에 FeatureGroup을 추가합니다.
 
 #     # 사고 원인별 그룹을 그룹화된 레이어 컨트롤로 추가
 #     GroupedLayerControl(groups=groups, collapsed=False, exclusive_groups=False).add_to(m)
@@ -1030,14 +1028,16 @@ def make_hotspot_fall(selected_national_park_accident,selected_npark_boundary,df
     # 추락사 사고지점 추가
     seoul_accident_fall_layer = folium.FeatureGroup(name='추락사고지점')
     for idx, row in selected_national_park_accident.iterrows():
-        folium.CircleMarker(
+            tooltip_text = f"유형: {row['유형']}<br>사고 일자: {row['연월일']}<br>위치: {row['위도_변환']}, {row['경도_변환']}<br>사고장소: {row['위치']}<br>고도: {row['고도']}<br>경사도: {float(row['경사도']):.2f}"                    
+            folium.CircleMarker(
             location=(row['위도_변환'], row['경도_변환']),
             popup=row['사고장소'],
             radius=3,
             color='red',
             fill=True,
             fill_color='red',
-            fill_opacity=1
+            fill_opacity=1,
+            tooltip=tooltip_text
         ).add_to(seoul_accident_fall_layer)
     seoul_accident_fall_layer.add_to(m)
 
